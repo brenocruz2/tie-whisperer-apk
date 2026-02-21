@@ -1,0 +1,9 @@
+{
+  "appId": "app.lovable.2d5ac3d02ec146bbb2d7bb263bf32258",
+  "appName": "Bac Bo AI",
+  "webDir": "dist",
+  "server": {
+    "url": "https://2d5ac3d0-2ec1-46bb-b2d7-bb263bf32258.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}

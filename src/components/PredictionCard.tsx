@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Prediction } from '@/lib/bacbo-engine';
 
 const decisionLabels: Record<string, string> = {
@@ -18,12 +19,45 @@ const barColors: Record<string, string> = {
   tie: 'bg-game-tie',
 };
 
+function playTieAlert() {
+  try {
+    const ctx = new AudioContext();
+    // Two-tone alert beep
+    [660, 880].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = freq;
+      gain.gain.value = 0.15;
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.15);
+      osc.stop(ctx.currentTime + i * 0.15 + 0.12);
+    });
+  } catch {}
+}
+
+function vibrate() {
+  try {
+    navigator.vibrate?.([200, 100, 200]);
+  } catch {}
+}
+
 interface PredictionCardProps {
   prediction: Prediction | null;
   totalGames: number;
 }
 
 export default function PredictionCard({ prediction, totalGames }: PredictionCardProps) {
+  const prevTieOver50 = useRef(false);
+
+  useEffect(() => {
+    const isOver50 = (prediction?.tieChance ?? 0) >= 50;
+    if (isOver50 && !prevTieOver50.current) {
+      playTieAlert();
+      vibrate();
+    }
+    prevTieOver50.current = isOver50;
+  }, [prediction?.tieChance]);
   return (
     <div className="bg-card border-2 border-border rounded-2xl w-full max-w-[450px] p-5 text-center shadow-2xl">
       <div className="text-[9px] tracking-[3px] text-muted-foreground mb-1 font-display">
